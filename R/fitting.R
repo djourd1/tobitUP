@@ -55,7 +55,7 @@ fitTobit = function(model){
 #' @export
 r2Tobit = function(model){
   Ey = fitTobit(model)[, "Ey"]
-  val = model$y
+  val = model$y[,"time"]
   r2<- cor(val, Ey)^2
   return(r2)
 }
