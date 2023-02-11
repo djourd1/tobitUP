@@ -4,8 +4,13 @@
 #' fitted values from a probit model estimated
 #' with AER package
 #'
-#' @param model The model to use
-#' @return res: A 4 columns matrix observed value, PyPos, EyPos, and Ey
+#' @param model The AER model to use
+#'
+#' @return
+#' - call
+#' - coefficients
+#' - tableAPEcond
+#'
 #' @examples
 #' library(wooldridge)
 #' data(mroz)
@@ -49,12 +54,12 @@ ape.tobit.cond <- function(model){
   table[, 2] <- stds * scaleAPE.cond
   table[, 3] <- table[, 1]/stds
   table[, 4] <- 2*pnorm(-abs(table[,3]))
-  x <- model[match(c('call', 'df', 'loglik', 'iter', 'na.action', 'idf',
-                     'scale', 'coefficients'),
+  x <- model[match(c('call', 'coefficients'),
                    names(model), nomatch=0)]
   x <- c(x, list(scaleAPE.cond = scaleAPE.cond, tableAPEcond=table))
   class(x) <- 'tobitAPEcond'
 
   x
 }
+
 

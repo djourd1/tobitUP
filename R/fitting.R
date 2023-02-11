@@ -51,4 +51,11 @@ fitTobit = function(model){
   x
 }
 
-
+#' Calculate the R2 of the tobit model
+#' @export
+r2Tobit = function(model){
+  Ey = fitTobit(model)[, "Ey"]
+  val = model$y
+  r2<- cor(val, Ey)^2
+  return(r2)
+}

@@ -7,10 +7,12 @@
 ape.tobit.cond(model)
 }
 \arguments{
-\item{model}{The model to use}
+\item{model}{The AER model to use}
 }
 \value{
-res: A 4 columns matrix observed value, PyPos, EyPos, and Ey
+- call
+- coefficients
+- tableAPEcond
 }
 \description{
 This function calculates the different
