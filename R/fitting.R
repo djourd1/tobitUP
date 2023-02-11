@@ -44,9 +44,9 @@ fitTobit = function(model){
   res = cbind(val, PyPos, EyPos, Ey)
   colnames(res) = c("Value", "PyPos", "EyPos", "Ey")
 
-  x <- model[match(c('call', 'coefficients'),
+  x <- model[match(c('call'),
                    names(model), nomatch=0)]
-  x <- c(x, list(scaleAPE.cond = scaleAPE.cond, tableExpected=res))
+  x <- c(x, list(tableExpected=res))
   class(x) <- 'tobitExpected'
   x
 }
