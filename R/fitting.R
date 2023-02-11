@@ -5,9 +5,15 @@
 #' with AER package PyPos, EyPos, and Ey
 #'
 #' @param model The model to use
-#' @return res: A matrix of the infile
+#' @return res: A 4 columns matrix observed value, PyPos, EyPos, and Ey
+#' @examples
+#' library(wooldridge)
+#' data(mroz)
+#' model <- tobit(hours ~ nwifeinc + educ, data=mroz)
+#' fitTobit(model)
+#'
 #' @export
-fitted.tobit = function(model){
+fitTobit = function(model){
   # input: an AER object
   # output: a 4xN matrix with initial values, PyPos EyPos and Ey
 

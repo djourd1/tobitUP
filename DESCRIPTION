@@ -12,7 +12,8 @@ LazyData: true
 Depends:
     devtools,
     AER,
-    survival
+    survival, 
+    wooldridge
 RoxygenNote: 7.2.3
 Suggests: 
     knitr,
