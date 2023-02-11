@@ -2,7 +2,7 @@
 #'
 #' This function calculates the different
 #' fitted values from a probit model estimated
-#' with AER package PyPos, EyPos, and Ey
+#' with AER package
 #'
 #' @param model The model to use
 #' @return res: A 4 columns matrix observed value, PyPos, EyPos, and Ey
@@ -43,6 +43,12 @@ fitTobit = function(model){
 
   res = cbind(val, PyPos, EyPos, Ey)
   colnames(res) = c("Value", "PyPos", "EyPos", "Ey")
-  return(res)
+
+  x <- model[match(c('call', 'coefficients'),
+                   names(model), nomatch=0)]
+  x <- c(x, list(scaleAPE.cond = scaleAPE.cond, tableExpected=res))
+  class(x) <- 'tobitExpected'
+  x
 }
+
 
