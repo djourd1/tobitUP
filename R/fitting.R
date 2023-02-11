@@ -54,7 +54,8 @@ fitTobit = function(model){
 #' Calculate the R2 of the tobit model
 #' @export
 r2Tobit = function(model){
-  Ey = fitTobit(model)[, "Ey"]
+  fits <- fitTobit(model)
+  Ey = fits$tableExpected[, "Ey"]
   val = model$y[,"time"]
   r2<- cor(val, Ey)^2
   return(r2)
