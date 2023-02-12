@@ -2,10 +2,26 @@
 % Please edit documentation in R/fitting.R
 \name{r2Tobit}
 \alias{r2Tobit}
-\title{Calculate the R2 of the tobit model}
+\title{Calculates the R2 of a tobit model}
 \usage{
 r2Tobit(model)
 }
+\arguments{
+\item{model}{The AER model}
+}
+\value{
+res: The R2 coefficient
+}
 \description{
-Calculate the R2 of the tobit model
+This function calculates the pseudo R2
+as the square of the correlation coefficient
+between the observed values and the
+unconditional fitted values E(y)
+}
+\examples{
+library(wooldridge)
+data(mroz)
+model <- tobit(hours ~ nwifeinc + educ, data=mroz)
+r2Tobit(model)
+
 }

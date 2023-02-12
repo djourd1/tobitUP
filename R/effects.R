@@ -56,10 +56,12 @@ ape.tobit.cond <- function(model){
   table[, 4] <- 2*pnorm(-abs(table[,3]))
   x <- model[match(c('call', 'coefficients'),
                    names(model), nomatch=0)]
-  x <- c(x, list(scaleAPE.cond = scaleAPE.cond, tableAPEcond=table))
-  class(x) <- 'tobitAPEcond'
+  x <- c(x, list(scaleAPE.cond = scaleAPE.cond, tableAPE=table))
+  class(x) <- 'tobitAPE'
 
   x
 }
+
+
 
 

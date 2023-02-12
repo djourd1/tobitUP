@@ -10,7 +10,10 @@ fitTobit(model)
 \item{model}{The model to use}
 }
 \value{
-res: A 4 columns matrix observed value, PyPos, EyPos, and Ey
+Returns a tobitExpected object with two values:
+
++ call: the tobit Call
++ table: A 4 columns matrix observed value, PyPos, EyPos, and Ey
 }
 \description{
 This function calculates the different

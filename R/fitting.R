@@ -5,7 +5,13 @@
 #' with AER package
 #'
 #' @param model The model to use
-#' @return res: A 4 columns matrix observed value, PyPos, EyPos, and Ey
+#' @return
+#'
+#' Returns a tobitExpected object with two values:
+#'
+#' + call: the tobit Call
+#' + table: A 4 columns matrix observed value, PyPos, EyPos, and Ey
+#'
 #' @examples
 #' library(wooldridge)
 #' data(mroz)
@@ -22,7 +28,7 @@ fitTobit = function(model){
     stop("Error: object is not an AER object")
   }
 
-  # Extract information
+  # Extract information from the AER model
   x = model.matrix(model)
   b = model$coefficients
   s = model$scale
@@ -32,13 +38,13 @@ fitTobit = function(model){
   xb = x%*% b
   xbs = xb/s
 
-  # create PyPos
+  # calculate PyPos
   PyPos = pnorm(xbs)
 
-  # create EyPos (conditional expectations )
+  # calculate EyPos (conditional expectations )
   EyPos =  xb + s * (dnorm(xbs)/pnorm(xbs))
 
-  # create Ey (unconditional expectations)
+  # Calculate Ey (unconditional expectations)
   Ey = PyPos * EyPos
 
   res = cbind(val, PyPos, EyPos, Ey)
@@ -46,17 +52,34 @@ fitTobit = function(model){
 
   x <- model[match(c('call'),
                    names(model), nomatch=0)]
-  x <- c(x, list(tableExpected=res))
+  x <- c(x, list(table=res))
   class(x) <- 'tobitExpected'
   x
 }
 
-#' Calculate the R2 of the tobit model
+#' Calculates the R2 of a tobit model
+#'
+#' This function calculates the pseudo R2
+#' as the square of the correlation coefficient
+#' between the observed values and the
+#' unconditional fitted values E(y)
+#'
+#'
+#' @param model The AER model
+#' @return res: The R2 coefficient
+#'
+#' @examples
+#' library(wooldridge)
+#' data(mroz)
+#' model <- tobit(hours ~ nwifeinc + educ, data=mroz)
+#' r2Tobit(model)
+#'
 #' @export
 r2Tobit = function(model){
   fits <- fitTobit(model)
-  Ey = fits$tableExpected[, "Ey"]
+  Ey = fits$table[, "Ey"]
   val = model$y[,"time"]
   r2<- cor(val, Ey)^2
   return(r2)
 }
+
