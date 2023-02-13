@@ -144,3 +144,18 @@ effect.cond <- function(model){
   res
 }
 
+summary.tobitEffect <- function(x,
+                                digits = max(options()$digits - 4, 3),
+                                signif.stars=FALSE, ...) {
+
+  # if(is.null(digits))
+  #     digits <- options()$digits
+  # cat("\nCall:\n")
+  # dput(x$call)
+  cat("\nAverage Partial Effects for Conditionals:\n")
+  #    printCoefmat(x$table, digits = digits, signif.stars=signif.stars,
+  #                 P.values=TRUE, has.Pvalue=TRUE)
+  printCoefmat(x$table, digits = 3,
+               has.Pvalue = TRUE, P.values = TRUE)
+}
+
