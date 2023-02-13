@@ -1,3 +1,46 @@
+#' Extract the classes of the model independent variables
+#' Class them into numeric and factor variables
+varClass =  function(model){
+
+  # extract the classes of each independent variables
+  # except the intercept
+  classes <- attributes(terms(model))[["dataClasses"]][-1L]
+
+  # Check that model includes only numeric and facor variables
+  # if not ask to recode some variables
+  if (!all(classes %in% c("numeric", "factor", "logical"))) {
+    stop("Error: The variables should be either numeric, logical, or factor")
+  }
+
+  # identify factors versus numeric terms in `model`,
+  #and examine only unique terms
+  vars <- list(
+    nnames = unique(names(classes)[classes %in% c("numeric")]),
+    fnames = paste0(unique(names(classes)[classes %in% c("factor")]), 1)
+  )
+  return(vars)
+}
+
+effect.cond.factor = function(X, b, s,  varname){
+  # Reminder (EyPos =  xb + s * (dnorm(xbs)/pnorm(xbs)))
+
+  X0 = X
+  X0[, varname] <- 0
+  xb0 = X0 %*% b
+  xbs0 = xb0/s
+
+  X1 = X
+  X1[, varname] <- 1
+  xb1 = X1 %*% b
+  xbs1 = xb1/s
+
+  E1Pos = xb1+ s *(dnorm(xbs1)/pnorm(xbs1))
+  E0Pos = xb0+ s *(dnorm(xbs0)/pnorm(xbs0))
+
+  res = cbind(mean(E1Pos-E0Pos), sd(E1Pos-E0Pos))
+  return(res)
+}
+
 #' Calculate the average partial effects on conditional expected values
 #'
 #' This function calculates the different
@@ -15,53 +58,75 @@
 #' library(wooldridge)
 #' data(mroz)
 #' model <- tobit(hours ~ nwifeinc + educ, data=mroz)
-#' ape.tobit.cond(model)
+#' effect.cond(model)
 #'
 #' @export
-ape.tobit.cond <- function(model){
-  # input: an AER (survreg) object
-  # output:
-
+effect.cond <- function(model){
   # Check that model is an AER object
   if (! inherits(model, "survreg")) {
     stop("Error: object is not an AER object")
   }
+
   # Extract information
   x = model.matrix(model)
   b = model$coefficients
-
-  cname <- names(model$coefficients)
   s = model$scale
-  val = model$y[, "time"]
-  kplus = length(b)+1
+  cname <- names(b)
 
   # Calculate the XB and XB/S
   xb = x%*% b
   xbs = xb/s
 
-  # thet = function(c) (1 - invMills(c) * (c + invMills(c)))
+  # Extract the SE from AER model
+  k_scale <- length(b)+1 # position of scale in thevar matrix
+  vcov = model$var[-k_scale, -k_scale]
+  colnames(vcov) = cname
+  row.names(vcov) = cname
+  stds = sqrt(diag(vcov))
+
+  # Calculate the mean scaling factor to obtain
+  # the marginal effects on conditionals for
+  # continuous variables
   invM = dnorm(xbs)/pnorm(xbs)
   thet = 1 - invM * (xbs + invM)
-  scaleAPE.cond = mean(thet)
+  scale.cond = mean(thet)
 
-  # calculate APE assuming that all variables
-  # ape.cond <- b * scaleAPE.cond
-  table <- matrix(rep(b, 4), ncol = 4)
-  dimnames(table) <- list(cname, c("Value", "Std. Error", "z", "p"))
-  ape = b*scaleAPE.cond
-  table[, 1] <- ape
-  stds <- sqrt(diag(model$var)[-kplus])
-  table[, 2] <- stds * scaleAPE.cond
-  table[, 3] <- table[, 1]/stds
-  table[, 4] <- 2*pnorm(-abs(table[,3]))
-  x <- model[match(c('call', 'coefficients'),
+  # Separate numerics from factors
+  nnames = varClass(model)$nnames
+  fnames = varClass(model)$fnames
+
+  # Reporting of marginal effects on conditional
+  # for continuous variables
+  table1 <- matrix(rep(b[nnames], 4), ncol = 4)
+  dimnames(table1) <- list(nnames, c("Value", "Std. Error", "z", "p"))
+  table1[, 1] <- b[nnames] * scale.cond
+  table1[, 2] <- stds[nnames] * scale.cond
+  table1[, 3] <- table1[, 1]/stds[nnames]
+  table1[, 4] <- 2*pnorm(-abs(table1[,3]))
+
+  # Reporting of marginal effects on conditional
+  # for factors
+  table2 <- matrix(rep(b[fnames], 4), ncol = 4)
+  dimnames(table2) <- list(fnames, c("Value", "Std. Error", "z", "p"))
+  for (i in fnames){
+    table2[i, 1] <- effect.cond.factor(x,b,s, i)[,1]
+    table2[i, 2] <- effect.cond.factor(x,b,s, i)[,2]
+    table2[, 3]  <- table2[i, 1]/table2[i, 2]
+    table2[, 4] <- 2*pnorm(-abs(table2[,3]))
+  }
+
+  ## Combine tables
+  table <- rbind(table1, table2)
+
+  # returns object
+  # return(list(table= table, tableN = table1, tableF=table2))
+  res <- model[match(c('call', 'coefficients'),
                    names(model), nomatch=0)]
-  x <- c(x, list(scaleAPE.cond = scaleAPE.cond, tableAPE=table))
-  class(x) <- 'tobitAPE'
+  res <- c(res, list(scaling = scale.cond, table=table,
+                 tableN = table1, tableF = table2))
+  class(res) <- 'tobitEffect'
 
-  x
+  res
 }
-
-
 
 
