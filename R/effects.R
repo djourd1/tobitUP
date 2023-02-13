@@ -144,6 +144,8 @@ effect.cond <- function(model){
   res
 }
 
+#'
+#' @export
 summary.tobitEffect <- function(x,
                                 digits = max(options()$digits - 4, 3),
                                 signif.stars=FALSE, ...) {
