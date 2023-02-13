@@ -12,11 +12,17 @@ varClass =  function(model){
     stop("Error: The variables should be either numeric, logical, or factor")
   }
 
+  fnames = NULL
+  fn = unique(names(classes)[classes %in% c("factor")])
+
+  if(! identical(fn, character(0))){
+    fnames = paste0(unique(names(classes)[classes %in% c("factor")]), 1)}
+
   # identify factors versus numeric terms in `model`,
   #and examine only unique terms
   vars <- list(
     nnames = unique(names(classes)[classes %in% c("numeric")]),
-    fnames = paste0(unique(names(classes)[classes %in% c("factor")]), 1)
+    fnames = fnames
   )
   return(vars)
 }
@@ -110,9 +116,8 @@ effect.cond <- function(model){
 
   # Reporting of marginal effects on conditional
   # for factors
-  if (is.null(fnames)){
-    table2 <- NULL
-  } else{
+  table2 <- NULL
+  if (!is.null(fnames)){
   table2 <- matrix(rep(b[fnames], 4), ncol = 4)
   dimnames(table2) <- list(fnames, c("Value", "Std. Error", "z", "p"))
   for (i in fnames){
@@ -121,9 +126,9 @@ effect.cond <- function(model){
     table2[, 3]  <- table2[i, 1]/table2[i, 2]
     table2[, 4] <- 2*pnorm(-abs(table2[,3]))
   }
-}
+  }
   ## Combine tables
-  if (is.null(fnames) & is.null(nnmaes)){
+  if (is.null(fnames) & is.null(nnames)){
     table <- NULL
   } else {
   table <- rbind(table1, table2)
@@ -138,5 +143,4 @@ effect.cond <- function(model){
 
   res
 }
-
 
