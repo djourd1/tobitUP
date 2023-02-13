@@ -97,15 +97,22 @@ effect.cond <- function(model){
 
   # Reporting of marginal effects on conditional
   # for continuous variables
+  if (is.null(nnames)){
+    table1 <- NULL
+  } else{
   table1 <- matrix(rep(b[nnames], 4), ncol = 4)
   dimnames(table1) <- list(nnames, c("Value", "Std. Error", "z", "p"))
   table1[, 1] <- b[nnames] * scale.cond
   table1[, 2] <- stds[nnames] * scale.cond
   table1[, 3] <- table1[, 1]/stds[nnames]
   table1[, 4] <- 2*pnorm(-abs(table1[,3]))
+  }
 
   # Reporting of marginal effects on conditional
   # for factors
+  if (is.null(fnames)){
+    table2 <- NULL
+  } else{
   table2 <- matrix(rep(b[fnames], 4), ncol = 4)
   dimnames(table2) <- list(fnames, c("Value", "Std. Error", "z", "p"))
   for (i in fnames){
@@ -114,10 +121,13 @@ effect.cond <- function(model){
     table2[, 3]  <- table2[i, 1]/table2[i, 2]
     table2[, 4] <- 2*pnorm(-abs(table2[,3]))
   }
-
+}
   ## Combine tables
+  if (is.null(fnames) & is.null(nnmaes)){
+    table <- NULL
+  } else {
   table <- rbind(table1, table2)
-
+  }
   # returns object
   # return(list(table= table, tableN = table1, tableF=table2))
   res <- model[match(c('call', 'coefficients'),
