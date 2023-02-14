@@ -47,10 +47,11 @@ effect.cond.factor = function(X, b, s,  varname){
   return(res)
 }
 
-#' Calculate the average partial effects on conditional expected values
+
+#' Calculates the average partial effects on conditional expected values
 #'
 #' This function calculates the different
-#' fitted values from a probit model estimated
+#' fitted values from a tobit model estimated
 #' with AER package
 #'
 #' @param model The AER model to use
@@ -148,7 +149,7 @@ effect.cond <- function(model){
 #' @export
 summary.tobitEffect <- function(x,
                                 digits = max(options()$digits - 4, 3),
-                                signif.stars=FALSE, ...) {
+                                signif.stars=TRUE, ...) {
 
   # if(is.null(digits))
   #     digits <- options()$digits
@@ -157,7 +158,9 @@ summary.tobitEffect <- function(x,
   cat("\nAverage Partial Effects for Conditionals:\n")
   #    printCoefmat(x$table, digits = digits, signif.stars=signif.stars,
   #                 P.values=TRUE, has.Pvalue=TRUE)
-  printCoefmat(x$table, digits = 3,
-               has.Pvalue = TRUE, P.values = TRUE)
+  printCoefmat(x$table, digits = digits,
+               has.Pvalue = TRUE,
+               P.values = TRUE,
+               signif.stars = signif.stars)
 }
 

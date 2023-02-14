@@ -50,12 +50,11 @@ fitTobit = function(model){
   res = cbind(val, PyPos, EyPos, Ey)
   colnames(res) = c("Value", "PyPos", "EyPos", "Ey")
 
-  x <- model[match(c('call'),
-                   names(model), nomatch=0)]
-  x <- c(x, list(table=res))
+  x <- list(table=res)
   class(x) <- 'tobitExpected'
   x
 }
+
 
 #' Calculates the R2 of a tobit model
 #'
@@ -77,7 +76,7 @@ fitTobit = function(model){
 #' @export
 r2Tobit = function(model){
   fits <- fitTobit(model)
-  Ey = fits$table[, "Ey"]
+  Ey = fits[, "Ey"]
   val = model$y[,"time"]
   r2<- cor(val, Ey)^2
   return(r2)
