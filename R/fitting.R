@@ -50,9 +50,7 @@ fitTobit = function(model){
   res = cbind(val, PyPos, EyPos, Ey)
   colnames(res) = c("Value", "PyPos", "EyPos", "Ey")
 
-  x <- list(table=res)
-  class(x) <- 'tobitExpected'
-  x
+  res
 }
 
 
