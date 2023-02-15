@@ -271,13 +271,12 @@ effect.uncond <- function(model){
 #' @export
 se.effect.uncond <- function(model, R, data){
   effs <- NULL
-  form = model$formula
   b = model$coefficients
   nr = nrow(data)
   for (i in 1:R){
     new_sample = sample(1:nr, size = nr, replace = TRUE)
     df = data.frame(data[new_sample, ])
-    new_model <- survreg(form, dist= "gaussian", data=df)
+    new_model <- survreg(formula = model$formula, dist= "gaussian", data=df)
     effs = rbind(effs, effect.uncond(new_model)$vec  )
   }
 
