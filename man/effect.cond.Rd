@@ -2,7 +2,7 @@
 % Please edit documentation in R/effects.R
 \name{effect.cond}
 \alias{effect.cond}
-\title{Calculate the average partial effects on conditional expected values}
+\title{Calculates the average partial effects on conditional expected values}
 \usage{
 effect.cond(model)
 }
@@ -16,7 +16,7 @@ effect.cond(model)
 }
 \description{
 This function calculates the different
-fitted values from a probit model estimated
+fitted values from a tobit model estimated
 with AER package
 }
 \examples{
